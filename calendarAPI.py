@@ -2,6 +2,7 @@ from __future__ import print_function
 import datetime
 import pickle
 import os.path
+from uuid import uuid4
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -61,10 +62,17 @@ class CalendarAPI():
             'reminders': {
                 'useDefault': False,
                 'overrides': [
-                    {'method': 'email', 'minutes': 24 * 60},
+                    {'method': 'email', 'minutes': 10},
                     {'method': 'popup', 'minutes': 10},
                 ],
             },
+
+            "conferenceData":{
+                "createRequest":{
+                    "requestId": f"{uuid4().hex}",
+                    "conferenceSolutionKey":{"type": "hangoutsMeet"}
+                }
+            }
         }
 
         #{'email': 'gabrieldss808@gmail.com'},
@@ -72,7 +80,7 @@ class CalendarAPI():
 
         try:
 
-            event = self.service.events().insert(calendarId='gabrieldss808@gmail.com', body=event).execute()
+            event = self.service.events().insert(calendarId='primary', sendNotifications=True,conferenceDataVersion=1,body=event).execute()
         except Exception as e:
 
             print(e)
